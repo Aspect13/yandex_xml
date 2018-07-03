@@ -13,13 +13,13 @@ class MainOne extends React.Component {
             response =>
                 response.text()
         ).then(
-            str => (new window.DOMParser()).parseFromString(str, "text/xml")
+            str => console.log(str)
         ).then(
             data => console.log('data', data)
         )
     };
 
-
+// (new window.DOMParser()).parseFromString(str, "text/xml")
 
     render () {
         this.getXML('xml1.xml');

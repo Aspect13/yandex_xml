@@ -1,0 +1,14 @@
+[Unit]
+Description=Yandex task service
+
+[Service]
+WorkingDirectory=/home/ad/yandex_xml
+ExecStart=/usr/bin/bash -c 'source venv/bin/activate; uwsgi --ini uwsgi.ini
+Restart=always
+KillSignal=SIGQUIT
+Type=notify
+NotifyAccess=all
+PIDFile=/run/yandex_xml.pid
+
+[Install]
+WantedBy=multi-user.target
