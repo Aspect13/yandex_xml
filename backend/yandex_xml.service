@@ -2,8 +2,8 @@
 Description=Yandex task service
 
 [Service]
-WorkingDirectory=/home/ad/yandex_xml
-ExecStart=/usr/bin/bash -c 'source venv/bin/activate; uwsgi --ini uwsgi.ini
+WorkingDirectory=/var/www/yandex_xml
+ExecStart=/bin/bash -c 'source venv/bin/activate; uwsgi --ini uwsgi.ini'
 Restart=always
 KillSignal=SIGQUIT
 Type=notify
