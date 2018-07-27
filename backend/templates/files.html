@@ -1,14 +1,38 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>XML Files</title>
-</head>
-<body>
-    <ul>
-        {% for file in files %}
-            <li><a href="files/{{ file }}">{{ file }}</a></li>
-        {% endfor %}
-    </ul>
-</body>
-</html>
+{% extends 'base.html' %}
+{% block body %}
+    <script>
+        const performAction1 = (fileName, method='POST') => fetch(
+            window.location.origin + '/save_json',
+            {
+                method: method,
+                body: fileName
+            }
+        ).then(response => {
+            if(response.ok || response.status === 410) {window.location.reload()}
+        })
+    </script>
+
+    <div class="container">
+        <h5>XMLs</h5>
+        <ul class="collection test-list">
+            {% for file in xml_files %}
+                <li class="collection-item row">
+                    <a href="files/{{ file }}" class="col s6">{{ file }}</a>
+                    <button class="btn waves-effect waves-light" onclick="performAction1('{{ file }}', method='POST')">Save in static</button>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="container">
+        <h5>JSONs</h5>
+        <ul class="collection test-list">
+            {% for file in json_files %}
+                <li class="collection-item row">
+                    <a href="files/{{ file }}" class="col s4">{{ file }}</a>
+                    <a href="test/{{ file }}" class="col s2">Test</a>
+                    <button class="btn waves-effect waves-light" onclick="performAction1('{{ file }}', method='DELETE')">Delete file</button>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}

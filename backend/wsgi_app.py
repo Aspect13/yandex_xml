@@ -3,16 +3,23 @@ import os
 
 import xmltodict
 from urllib.parse import parse_qs
+from flask import Flask, request, render_template, jsonify, Response
+
 
 STATIC_PATH = 'static'
 
-from flask import Flask, request, render_template
-
 app = Flask(__name__)
+
+
+def convert(xml_file, xml_attribs=True):
+	with open(xml_file, "rb") as f:  # notice the "rb" mode
+		return xmltodict.parse(f, xml_attribs=xml_attribs)
+
 
 @app.route('/')
 def index():
 	return "<span style='color:red'>I am app 1 and the request is: {}</span>".format(request.method)
+
 
 @app.route('/app')
 def the_app():
@@ -23,33 +30,35 @@ def the_app():
 @app.route('/files/<file_name>', methods=['GET'])
 def files(file_name=None):
 	if file_name:
-		return open(STATIC_PATH + '/' + file_name, 'r').read()
-	file_list = os.listdir(STATIC_PATH)
-	return render_template('files.html', files=file_list)
+		if file_name.endswith('.json'):
+			return jsonify(json.load(open(f'{STATIC_PATH}/json/{file_name}', 'r', encoding='utf-8')))
+		return Response(
+			open(f'{STATIC_PATH}/xml/{file_name}', 'r', encoding='utf-8').read(),
+			content_type='text/plain'
+		)
+	xml_files = os.listdir(f'{STATIC_PATH}/xml')
+	json_files = os.listdir(f'{STATIC_PATH}/json')
+	return render_template('files.html', xml_files=xml_files, json_files=json_files)
 
 
-
-def convert(xml_file, xml_attribs=True):
-	with open(xml_file, "rb") as f:  # notice the "rb" mode
-		d = xmltodict.parse(f, xml_attribs=xml_attribs)
-		return json.dumps(d, indent=4)
+@app.route('/test/<file_name>')
+def test(file_name):
+	return jsonify(convert(STATIC_PATH + '/json/' + file_name))
 
 
-def application(env, start_response):
-	qs = parse_qs(env['QUERY_STRING'])
+@app.route('/save_json', methods=['POST', 'DELETE'])
+def save_json():
+	file_name = request.data.decode('utf-8')
 
-	if qs.get('file', [''])[0].lower() == 'log':
-		start_response('200 OK', [('Content-Type', 'text/plain')])
-		return open(r'/home/ad/yandex_xml/log/uwsgi.log', 'rb').readlines()[::-1]
+	print(file_name)
 
-	if qs.get('file'):
-		xml_filename = qs['file'][0]
-		json = convert('/mnt/c/Users/AD/WebstormProjects/yandex_xml/static/{}.xml'.format(xml_filename))
-		start_response('200 OK', [('Content-Type', 'application/json')])
-		return bytes(json, encoding='utf-16')
+	if request.method == 'DELETE':
+		os.remove(f'{STATIC_PATH}/json/{file_name}')
+		return Response(status=410)
 
-	start_response('200 OK', [('Content-Type', 'text/html')])
-	return b"DAAAAAAM son where'd u got this?"
+	with open(f'{STATIC_PATH}/json/{file_name}.json', 'w') as out:
+		json.dump(convert(f'{STATIC_PATH}/xml/{file_name}'), out)
+	return Response(status=205)
 
 
 if __name__ == '__main__':
