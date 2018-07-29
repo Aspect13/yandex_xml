@@ -18,7 +18,7 @@ def convert(xml_file, xml_attribs=True):
 
 @app.route('/')
 def index():
-	return "<span style='color:red'>I am app 1 and the request is: {}</span>".format(request.method)
+	return "<div>Contents are:<ul><li><a href='/files'>files</a></li></ul></div>".format(request.method)
 
 
 @app.route('/app')
@@ -43,7 +43,7 @@ def files(file_name=None):
 
 @app.route('/test/<file_name>')
 def test(file_name):
-	return jsonify(convert(STATIC_PATH + '/json/' + file_name))
+	return jsonify(convert(STATIC_PATH + '/xml/' + file_name))
 
 
 @app.route('/save_json', methods=['POST', 'DELETE'])

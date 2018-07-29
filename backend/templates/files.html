@@ -18,6 +18,7 @@
             {% for file in xml_files %}
                 <li class="collection-item row">
                     <a href="files/{{ file }}" class="col s6">{{ file }}</a>
+                    <a href="test/{{ file }}" class="col s2">Test</a>
                     <button class="btn waves-effect waves-light" onclick="performAction1('{{ file }}', method='POST')">Save in static</button>
                 </li>
             {% endfor %}
@@ -29,7 +30,6 @@
             {% for file in json_files %}
                 <li class="collection-item row">
                     <a href="files/{{ file }}" class="col s4">{{ file }}</a>
-                    <a href="test/{{ file }}" class="col s2">Test</a>
                     <button class="btn waves-effect waves-light" onclick="performAction1('{{ file }}', method='DELETE')">Delete file</button>
                 </li>
             {% endfor %}
